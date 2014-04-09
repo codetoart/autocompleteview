@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AutoCompleteTextViewComponent</string>
+	<string name="auto_text">Auto text</string>
+	<string name="error">Error!</string>
+</resources>
