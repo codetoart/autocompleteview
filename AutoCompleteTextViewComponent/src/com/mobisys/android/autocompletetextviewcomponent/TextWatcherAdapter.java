@@ -3,14 +3,11 @@ package com.mobisys.android.autocompletetextviewcomponent;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 
 public class TextWatcherAdapter implements TextWatcher {
 
 	public interface TextWatcherListener {
-
 		void onTextChanged(AutoCompleteTextView view, String text);
-
 	}
 
 	private final AutoCompleteTextView view;

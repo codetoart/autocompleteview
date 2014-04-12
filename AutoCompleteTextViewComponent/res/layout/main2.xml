@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/darker_gray">
+    android:background="@android:color/darker_gray" xmlns:app="http://schemas.android.com/apk/res/com.mobisys.android.autocompletetextviewcomponent">
     <com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView android:id="@+id/auto_text"
         android:layout_width="fill_parent"
         android:layout_height="40dp"
@@ -16,5 +16,7 @@
         android:textSize="18sp"
         android:background="@android:color/white"
         xmlns:app="http://schemas.android.com/apk/res-auto" 
-    	app:url="http://www.google.com" />
+    	app:url=""
+    	app:google_places_api_key="AIzaSyDhFGUWlyd0KsjPQ59ATr-yL0bQKujHmeg"
+    	app:input_key=""/>
 </RelativeLayout>

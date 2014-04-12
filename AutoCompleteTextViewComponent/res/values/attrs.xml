@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="ClearableAutoTextView">
-    <attr name="url" format="string"/>
+	    <attr name="url" format="string"/>
+	    <attr name="google_places_api_key" format="string"/>
+	    <attr name="input_key" format="string"/>
 	</declare-styleable>
 </resources>
