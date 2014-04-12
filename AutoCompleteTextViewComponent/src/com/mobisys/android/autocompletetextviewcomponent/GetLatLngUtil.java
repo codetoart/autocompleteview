@@ -25,7 +25,6 @@ public class GetLatLngUtil {
 	public static class GetLatLngAsyncTask extends AsyncTask<String,Void, GeoPoint>{
 
 		private Context mContext;
-		//private boolean mIsOrigin;
 		private String mAddress;
 		private GetLatLngResult mResultListener;
 		
@@ -37,8 +36,6 @@ public class GetLatLngUtil {
 		@Override
 		protected GeoPoint doInBackground(String... params) {
 			mAddress=params[0];
-			//mIsOrigin=Integer.valueOf(ht.get("isOrigin"))==1;
-			//mAddress=ht.get("address");
 			return getFromLocation(mAddress);	
 		}
 
@@ -49,27 +46,6 @@ public class GetLatLngUtil {
 				if(result!=null) mResultListener.onLatLngReceive(result.getLatitudeE6()/1E6, result.getLongitudeE6()/1E6);
 				else mResultListener.onError(null);
 			}
-			//if(mPg.isShowing()) mPg.dismiss();
-			/*if(result!=null){
-				if(mIsOrigin){
-					mLatOrigin=result.getLatitudeE6()/1E6;
-	                mLngOrigin=result.getLongitudeE6()/1E6;
-	                getLatLngFromAddress(false,mDestText);
-				}
-				else{
-					mLatDest=result.getLatitudeE6()/1E6;
-	                mLngDest=result.getLongitudeE6()/1E6;
-	                if(Preferences.DEBUG)Log.d("Main", "*****Origin lat: "+mLatOrigin+" lng: "+mLngOrigin);
-					if(Preferences.DEBUG)Log.d("Main", "*****Dest lat: "+mLatDest+" lng: "+mLngDest);
-					
-					if(mLatOrigin!=0.0&&mLngOrigin!=0.0&&mLatDest!=0.0&&mLngDest!=0.0){
-						searchDrives();
-					}
-				}	
-			}
-			else{
-				 if(mPg!=null && mPg.isShowing()) mPg.dismiss();
-			}*/
 		}
 		
 		private GeoPoint getFromLocation(String address){

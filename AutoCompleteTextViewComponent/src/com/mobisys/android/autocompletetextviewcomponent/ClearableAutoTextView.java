@@ -5,8 +5,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import com.mobisys.android.autocompletetextviewcomponent.TextWatcherAdapter.TextWatcherListener;
-
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -14,7 +13,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,6 +26,7 @@ import android.view.View.OnTouchListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * To change clear icon, set
@@ -32,33 +35,27 @@ import android.widget.TextView;
  * android:drawableRight="@drawable/custom_icon"
  * </pre>
  */
+@SuppressLint("HandlerLeak") 
 public class ClearableAutoTextView extends AutoCompleteTextView implements OnTouchListener,
-		OnFocusChangeListener, TextWatcherListener {
+		OnFocusChangeListener, TextWatcher{
 
 	private Context mContext;
-	private SelectedLocationListener mListener;
+	private SelectionListener mListener;
 	private String mAutocompleteUrl;
 	public String mGooglePlacesApiKey;
 	private boolean mAutoTextSelected=false;
 	private Drawable xD;
-	private Listener listener;
-	private AutoCompleteResponseParserInterface mParser;
+	private AutoCompleteResponseParser mParser;
 	private String mInputKey=null;
-	
-	public interface Listener {
-		void didClearText();
-	}
-	
+	private OnTouchListener l;
+	private OnFocusChangeListener f;
+
 	public interface DisplayStringInterface {
 		public String getDisplayString();
 	}
 	
-	public interface AutoCompleteResponseParserInterface {
+	public interface AutoCompleteResponseParser {
 		 public ArrayList<DisplayStringInterface> 	parseAutoCompleteResponse(String response);
-	}
-	
-	public void setListener(Listener listener) {
-		this.listener = listener;
 	}
 	
 	public ClearableAutoTextView(Context context) {
@@ -67,21 +64,26 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 		init();
 	}
 
-	public ClearableAutoTextView(Context context, AttributeSet attrs) {
+	public ClearableAutoTextView(Context context, AttributeSet attrs) throws Exception {
 		super(context, attrs);
 		mContext=context;
 		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ClearableAutoTextView);
 	    CharSequence url = a.getString(R.styleable.ClearableAutoTextView_url);
 	    CharSequence google_places_api = a.getString(R.styleable.ClearableAutoTextView_google_places_api_key);
 	    CharSequence input_key = a.getString(R.styleable.ClearableAutoTextView_input_key);
+	    a.recycle();
 	    
 	    if (url != null) mAutocompleteUrl=url.toString();
 	    if (google_places_api != null) mGooglePlacesApiKey=google_places_api.toString();
 	    if(input_key!=null) mInputKey=input_key.toString();
 	    
 	    if(mAutocompleteUrl==null || mAutocompleteUrl.length()==0){
+	    	if(mGooglePlacesApiKey==null) throw new Exception("If autocomplete url is null then it uses Google places auto complete & so, you must specify google_places_api_key attribute in XML");
 	    	mAutocompleteUrl = GoogleAutoCompleteParser.getGooglePlacesUrl(mGooglePlacesApiKey);
 	    	mParser = new GoogleAutoCompleteParser();
+	    }
+	    else {
+	    	if(input_key==null || input_key.length()==0) throw new Exception("You must specify input key to send to autocomplete url");
 	    }
 	    
 		init();
@@ -91,6 +93,26 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 		super(context, attrs, defStyle);
 		mContext=context;
 		init();
+	}
+
+	private void init() {
+		xD = getCompoundDrawables()[2];
+		if (xD == null) {
+			xD = getResources().getDrawable(getDefaultClearIconId());
+		}
+		xD.setBounds(0, 0, xD.getIntrinsicWidth(), xD.getIntrinsicHeight());
+		setClearIconVisible(false);
+		super.setOnTouchListener(this);
+		super.setOnFocusChangeListener(this);
+		addTextChangedListener(this);
+	}
+
+	private int getDefaultClearIconId() {
+		int id = getResources().getIdentifier("ic_clear", "drawable", "android");
+		if (id == 0) {
+			id = android.R.drawable.presence_offline;
+		}
+		return id;
 	}
 
 	@Override
@@ -103,9 +125,6 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 		this.f = f;
 	}
 
-	private OnTouchListener l;
-	private OnFocusChangeListener f;
-
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		if (getCompoundDrawables()[2] != null) {
@@ -114,9 +133,6 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 			if (tappedX) {
 				if (event.getAction() == MotionEvent.ACTION_UP) {
 					setText("");
-					if (listener != null) {
-						listener.didClearText();
-					}
 				}
 				return true;
 			}
@@ -139,20 +155,6 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 		}
 	}
 
-	
-	@Override
-	public void onTextChanged(AutoCompleteTextView view, String text) {
-		if (isFocused()) {
-			setClearIconVisible(isNotEmpty(text));
-			if(!mAutoTextSelected){
-				if(text.length()>0){
-					loadSuggestions(text.toString());
-				}
-			}
-			else mAutoTextSelected=false;
-		}
-	}
-
 	private void loadSuggestions(final String s) {
 		mHandler.removeMessages(0);
 		Message msg=mHandler.obtainMessage(0);
@@ -162,7 +164,8 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 		mHandler.sendMessageDelayed(msg, 500);
 	}
 	
-	Handler mHandler = new Handler(){
+	private Handler mHandler = new Handler(){
+		@SuppressWarnings("unchecked")
 		@Override
 		public void handleMessage(Message msg) {
 			if(msg.what==0){
@@ -206,8 +209,7 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 				autoCompleteAdapter.notifyDataSetChanged();
 			}
 		}
-		
-	}	
+	}
 	
     private String appendInput(String query){
     	try {
@@ -226,12 +228,8 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
     }
     
 	public class AdapterAutoComplete extends ArrayAdapter<DisplayStringInterface> {
-		ArrayList<DisplayStringInterface> items;
-		boolean isOrigin;
-		
 	    public AdapterAutoComplete(Context context, int viewResourceId, ArrayList<DisplayStringInterface> items) {
 	        super(context, viewResourceId, items);
-	        this.items = items;
 	    }
 
 	    public View getView(final int position, View convertView, ViewGroup parent) {
@@ -240,16 +238,17 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 	            LayoutInflater inflate = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	            v = inflate.inflate(R.layout.auto_complete_item, null);
 	        }
-	        ((TextView)v.findViewById(R.id.place_name)).setText(getItem(position).getDisplayString());
+	        
+	        ((TextView)v.findViewById(R.id.item)).setText(getItem(position).getDisplayString());
 	        v.setOnClickListener(new View.OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
 					mAutoTextSelected=true;
 					setText(getItem(position).getDisplayString());
-					if(mListener!=null) mListener.onSelectedLocation(getItem(position).getDisplayString());
+					if(mListener!=null) mListener.onItemSelection(getItem(position).getDisplayString());
 					clearFocus();
-					getLatLngFromAddress(getItem(position).getDisplayString());
+					if(mAutocompleteUrl.contains(GoogleAutoCompleteParser.PLACES_API_BASE)) getLatLngFromAddress(getItem(position).getDisplayString());
 				}
 			});
 	        return v;
@@ -257,16 +256,17 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 	}
 	
 	private void getLatLngFromAddress(String address) {
+		Log.d("ClearableAutoTextView", "Fetching location information: "+address);
 		GetLatLngUtil.getLatLng(mContext, address, new GetLatLngUtil.GetLatLngResult() {
 			
 			@Override
 			public void onLatLngReceive(double lat, double lng) {
-				if(mListener!=null) mListener.onFetchLatLngForSelectedLoc(lat, lng);
+				if(mListener!=null) mListener.onReceiveLocationInformation(lat, lng);
 			}
 			
 			@Override
 			public void onError(String message) {
-				AppUtil.showErrorDialog("Some Error Occured! Please try again.", mContext);
+				Toast.makeText(mContext, "Location information cannot be fetched..", Toast.LENGTH_SHORT).show();
 			}	
 		});
 	}
@@ -279,38 +279,40 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 		return str == null || str.length() == 0;
 	}
 	
-	private void init() {
-		xD = getCompoundDrawables()[2];
-		if (xD == null) {
-			xD = getResources().getDrawable(getDefaultClearIconId());
-		}
-		xD.setBounds(0, 0, xD.getIntrinsicWidth(), xD.getIntrinsicHeight());
-		setClearIconVisible(false);
-		super.setOnTouchListener(this);
-		super.setOnFocusChangeListener(this);
-		addTextChangedListener(new TextWatcherAdapter(this, this));
-	}
-
-	private int getDefaultClearIconId() {
-		int id = getResources()
-				.getIdentifier("ic_clear", "drawable", "android");
-		if (id == 0) {
-			id = android.R.drawable.presence_offline;
-		}
-		return id;
-	}
-
 	protected void setClearIconVisible(boolean visible) {
 		Drawable x = visible ? xD : null;
 		setCompoundDrawables(getCompoundDrawables()[0],
 				getCompoundDrawables()[1], x, getCompoundDrawables()[3]);
 	}
 	
-	public void setSelectionListener(SelectedLocationListener listener){
+	public void setSelectionListener(SelectionListener listener){
 		this.mListener = listener;
 	}
 
-	public void setParser(AutoCompleteResponseParserInterface autoCompleteParser) {
+	public void setParser(AutoCompleteResponseParser autoCompleteParser) {
 		this.mParser=autoCompleteParser;
+	}
+
+	@Override
+	public void onTextChanged(CharSequence s, int start, int before, int count) {
+		String text = s.toString();
+		if (isFocused()) {
+			setClearIconVisible(isNotEmpty(text));
+			if(!mAutoTextSelected){
+				if(text.length()>0){
+					loadSuggestions(text.toString());
+				}
+			}
+			else mAutoTextSelected=false;
+		}
+	}
+	
+	@Override
+	public void beforeTextChanged(CharSequence s, int start, int count,
+			int after) {
+	}
+
+	@Override
+	public void afterTextChanged(Editable s) {
 	}
 }

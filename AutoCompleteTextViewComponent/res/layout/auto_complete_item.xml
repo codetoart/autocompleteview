@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:padding="5dp"
     android:background="@android:color/white">
-    <TextView android:id="@+id/place_name"
+    <TextView android:id="@+id/item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="16sp"
