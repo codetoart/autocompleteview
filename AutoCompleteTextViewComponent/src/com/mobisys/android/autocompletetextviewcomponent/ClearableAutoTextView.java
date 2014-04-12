@@ -3,13 +3,11 @@ package com.mobisys.android.autocompletetextviewcomponent;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,11 +15,13 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnFocusChangeListener;
+import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -30,13 +30,12 @@ import android.widget.Toast;
 
 @SuppressLint("HandlerLeak") 
 public class ClearableAutoTextView extends AutoCompleteTextView implements OnTouchListener,
-		OnFocusChangeListener, TextWatcher{
+		OnFocusChangeListener, TextWatcher, OnKeyListener{
 
 	private Context mContext;
 	private SelectionListener mListener;
 	private String mAutocompleteUrl;
 	public String mGooglePlacesApiKey;
-	private boolean mAutoTextSelected=false;
 	private Drawable xD;
 	private AutoCompleteResponseParser mParser;
 	private String mInputKey=null;
@@ -97,6 +96,7 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 		setClearIconVisible(false);
 		super.setOnTouchListener(this);
 		super.setOnFocusChangeListener(this);
+		super.setOnKeyListener(this);
 		addTextChangedListener(this);
 	}
 
@@ -154,47 +154,28 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 		Bundle b=new Bundle();
 		b.putString("query", s);
 		msg.setData(b);
-		mHandler.sendMessageDelayed(msg, 500);
+		mHandler.sendMessageDelayed(msg, 300);
 	}
 	
 	private Handler mHandler = new Handler(){
-		@SuppressWarnings("unchecked")
 		@Override
 		public void handleMessage(Message msg) {
 			if(msg.what==0){
 				Bundle b = msg.getData();
 				String query=b.getString("query");
-				
+
 				if(query.length()>0 && query!=null){
-					Hashtable<String, String> ht=new Hashtable<String, String>();
-			    	ht.put("query", query);
-					GetResponseAsyncTask task=new GetResponseAsyncTask(mContext);
-					task.execute(ht);	
+					getResponse(query);
 				}
 			}
 		}
     };
-
-    public class GetResponseAsyncTask extends AsyncTask<Hashtable<String, String>,Void, ArrayList<DisplayStringInterface>>{
-
-		Context mContext;
-	
-		public GetResponseAsyncTask(Context mContext) {
-			this.mContext=mContext;
-		}
-
+    
+    private Handler mUiHandler = new Handler(){
 		@Override
-		protected ArrayList<DisplayStringInterface> doInBackground(Hashtable<String, String>... params) {
-			Hashtable<String, String> ht=params[0];
-			final String myQuery=ht.get("query");
-			String url = appendInput(myQuery);
-			String response = HttpConnector.getResponse(url);
-			return mParser.parseAutoCompleteResponse(response);
-		}
-
-		@Override
-		protected void onPostExecute(ArrayList<DisplayStringInterface> result) {
-			super.onPostExecute(result);
+		public void handleMessage(Message msg) {
+			@SuppressWarnings("unchecked")
+			ArrayList<DisplayStringInterface> result = (ArrayList<ClearableAutoTextView.DisplayStringInterface>)msg.obj;
 			if(result!=null && !result.isEmpty()){
 				AdapterAutoComplete autoCompleteAdapter = new AdapterAutoComplete(mContext,R.layout.auto_complete_item,result);
 				
@@ -202,12 +183,27 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 				autoCompleteAdapter.notifyDataSetChanged();
 			}
 		}
-	}
-	
+    };
+    
+    private void getResponse(final String query){
+    	new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				String url = appendInput(query);
+				Log.d("ClearableAutoTextView", "Calling URL: "+url);
+				String response = HttpConnector.getResponse(url);
+				ArrayList<DisplayStringInterface> displayList = mParser.parseAutoCompleteResponse(response);
+				Message msg = Message.obtain(mUiHandler);
+				msg.obj = displayList;
+				msg.sendToTarget();
+			}
+		 }).start();
+    }
+    
     private String appendInput(String query){
     	try {
     		StringBuilder sb = new StringBuilder(mAutocompleteUrl);
-			sb.append("&input=" + URLEncoder.encode(query, "utf8"));
 			if(mInputKey==null || mInputKey.length()==0)
 				sb.append("&input=" + URLEncoder.encode(query, "utf8"));
 			else
@@ -237,7 +233,6 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 				
 				@Override
 				public void onClick(View v) {
-					mAutoTextSelected=true;
 					setText(getItem(position).getDisplayString());
 					if(mListener!=null) mListener.onItemSelection(getItem(position).getDisplayString());
 					clearFocus();
@@ -288,16 +283,7 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 
 	@Override
 	public void onTextChanged(CharSequence s, int start, int before, int count) {
-		String text = s.toString();
-		if (isFocused()) {
-			setClearIconVisible(isNotEmpty(text));
-			if(!mAutoTextSelected){
-				if(text.length()>0){
-					loadSuggestions(text.toString());
-				}
-			}
-			else mAutoTextSelected=false;
-		}
+		if(isFocused()) setClearIconVisible(isNotEmpty(s.toString()));
 	}
 	
 	@Override
@@ -307,5 +293,16 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 
 	@Override
 	public void afterTextChanged(Editable s) {
+		String query=s.toString();
+		
+		Log.d("ClearableAutoTextView", "Query String: "+query);
+		if(query.length()>0 && query!=null){
+			loadSuggestions(query);
+		}
+	}
+
+	@Override
+	public boolean onKey(View v, int keyCode, KeyEvent event) {
+		return false;
 	}
 }

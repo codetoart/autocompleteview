@@ -36,6 +36,7 @@ public class HttpConnector {
 	            conn.disconnect();
 	        }
 	    }
+	    Log.d("Result", jsonResults.toString());
 	    return jsonResults.toString();
 	}
 }
