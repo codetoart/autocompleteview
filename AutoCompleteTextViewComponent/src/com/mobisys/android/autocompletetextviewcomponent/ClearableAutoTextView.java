@@ -129,7 +129,6 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 			if(!mAutoTextSelected){
 				if(text.length()>0){
 					loadSuggestions(text.toString());
-					//enableOriginSpinner(dialog);
 				}
 			}
 			else mAutoTextSelected=false;
