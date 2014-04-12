@@ -3,6 +3,12 @@ autocompletetextview
 
 Easiest way to add autocomplete component in your app.
 
+Sample Google Place screenshot
+![alt tag](https://raw.githubusercontent.com/mobisystech/autocompletetextview/master/google_place.png)
+
+Sample Customized autocomplete URL (Wiki autocomplete) Screenshot 
+![alt tag](https://raw.githubusercontent.com/mobisystech/autocompletetextview/master/wiki.png)
+
 If you don't specify any autocomplete url in XML, it will use Google places auto-complete URL. You'll need to specify Google API key in XML.
 
 Sample:
