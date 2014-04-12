@@ -63,8 +63,10 @@ public class MainActivity extends Activity implements SelectionListener{
 	}
 
 	@Override
-	public void onItemSelection(String selectedItem) {
-		Toast.makeText(MainActivity.this, "Selected Location: "+selectedItem, Toast.LENGTH_SHORT).show();
+	public void onItemSelection(DisplayStringInterface selectedItem) {
+		WikiModel model = null;
+		if(selectedItem instanceof WikiModel) model = (WikiModel)selectedItem; //gets the selected item
+		Toast.makeText(MainActivity.this, "Selected Item: "+selectedItem.getDisplayString(), Toast.LENGTH_SHORT).show();
 	}
 
 	@Override

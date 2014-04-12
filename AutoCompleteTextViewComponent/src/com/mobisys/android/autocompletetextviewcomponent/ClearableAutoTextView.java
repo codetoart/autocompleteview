@@ -234,7 +234,7 @@ public class ClearableAutoTextView extends AutoCompleteTextView implements OnTou
 				@Override
 				public void onClick(View v) {
 					setText(getItem(position).getDisplayString());
-					if(mListener!=null) mListener.onItemSelection(getItem(position).getDisplayString());
+					if(mListener!=null) mListener.onItemSelection(getItem(position));
 					clearFocus();
 					if(mAutocompleteUrl.contains(GoogleAutoCompleteParser.PLACES_API_BASE)) getLatLngFromAddress(getItem(position).getDisplayString());
 				}
