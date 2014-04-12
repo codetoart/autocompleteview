@@ -91,3 +91,18 @@ Response from Autocomplete URL should be parsed into data model which implements
 ```
 
 When user selects the item, you'll receive the selected item in ```SelectionListener```. If you are using for Google Places URL, it will also get Lat Lng information of selected place.
+
+SelectionListener
+```Java
+public interface SelectionListener {
+	/*
+	 * Called when user selects an item from autocomplete view
+	 */
+	public void onItemSelection(DisplayStringInterface selectedItem);
+	
+	/*
+	 * Called only in case of Google Places API (autocomplete_url = null)
+	 */
+	public void onReceiveLocationInformation(double lat, double lng);
+}
+```
