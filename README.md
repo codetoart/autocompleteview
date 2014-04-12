@@ -46,7 +46,22 @@ Sample example: Wiki auto-complete URL: http://en.wikipedia.org/w/api.php?action
     	app:input_key="search"/>
 ```
 
-Java code for wiki auto-complete
+Response from Autocomplete URL should be parsed into data model which implements ```DisplayStringInterface```
+```java
+	public class WikiModel implements DisplayStringInterface{
+		public String item;
+
+		public WikiModel(String item){
+			this.item = item;
+		}
+		
+		@Override
+		public String getDisplayString() {
+			return item;
+		}
+	}
+```
+
 ```java
 		mAutoText=(com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView)findViewById(R.id.auto_text);
 		//Sets the selection listener
@@ -75,4 +90,4 @@ Java code for wiki auto-complete
 		});
 ```
 
-When user selects the item, you'll receive the selected item in ```SelectionListener```
+When user selects the item, you'll receive the selected item in ```SelectionListener```. If you are using for Google Places URL, it will also get Lat Lng information of selected place.
