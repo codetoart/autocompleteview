@@ -28,13 +28,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/**
- * To change clear icon, set
- * 
- * <pre>
- * android:drawableRight="@drawable/custom_icon"
- * </pre>
- */
 @SuppressLint("HandlerLeak") 
 public class ClearableAutoTextView extends AutoCompleteTextView implements OnTouchListener,
 		OnFocusChangeListener, TextWatcher{
