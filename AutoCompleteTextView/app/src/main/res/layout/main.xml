@@ -35,7 +35,7 @@
         android:textSize="18sp"
         android:background="@android:color/white"
     	app:autocompleteUrl="https://maps.googleapis.com/maps/api/place/autocomplete/json?sensor=false&amp;key=AIzaSyDhFGUWlyd0KsjPQ59ATr-yL0bQKujHmeg&amp;input="
-        app:row_layout="@layout/row_place"
+        app:rowLayout="@layout/row_place"
         app:modelClass="com.mobisys.android.autocompletetextview.model.Place"/>
 
     <ProgressBar android:id="@+id/loading_indicator"
@@ -45,6 +45,6 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="20dp"
         style="?android:attr/progressBarStyleSmall"
-        android:visibility="visible"/>
+        android:visibility="gone"/>
 
 </RelativeLayout>

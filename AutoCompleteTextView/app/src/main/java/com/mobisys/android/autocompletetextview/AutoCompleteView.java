@@ -92,7 +92,7 @@ public class AutoCompleteView extends AutoCompleteTextView {
             TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AutoCompleteView);
             mAutocompleteUrl = a.getString(R.styleable.AutoCompleteView_autocompleteUrl);
             mModelClassName = a.getString(R.styleable.AutoCompleteView_modelClass);
-            mLayoutId = a.getResourceId(R.styleable.AutoCompleteView_row_layout, android.R.layout.simple_dropdown_item_1line);
+            mLayoutId = a.getResourceId(R.styleable.AutoCompleteView_rowLayout, android.R.layout.simple_dropdown_item_1line);
         }
 
         if (mModelClassName == null) {

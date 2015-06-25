@@ -3,6 +3,6 @@
 	<declare-styleable name="AutoCompleteView">
 		<attr name="autocompleteUrl" format="string"/>
 		<attr name="modelClass" format="string"/>
-		<attr name="row_layout" format="reference"/>
+		<attr name="rowLayout" format="reference"/>
 	</declare-styleable>
 </resources>
