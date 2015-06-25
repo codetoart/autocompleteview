@@ -4,7 +4,7 @@ autocompletetextview
 Easiest way to add autocomplete view in your app.
 
 Sample Google Place screenshot
-![alt tag](https://raw.githubusercontent.com/mobisystech/autocompletetextview/master/google_place.png)
+![alt tag](https://raw.githubusercontent.com/mobisystech/autocompletetextview/master/AutoCompleteTextView/Screenshot_2015-06-25-18-31-33.png)
 
 Sample:
 ```xml
@@ -87,81 +87,48 @@ public class Place {
 ```
 
 
-Sample example: Wiki auto-complete URL: http://en.wikipedia.org/w/api.php?action=opensearch&limit=8&namespace=0&format=json&search=android
-```xml
-<com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView android:id="@+id/auto_text"
-        android:layout_width="fill_parent"
-        android:layout_height="40dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginRight="8dp"
-        android:paddingLeft="10dp"
-        android:hint="wiki text"
-       	android:singleLine="true"
-       	android:textColor="@android:color/black"
-        android:textSize="18sp"
-        android:background="@android:color/white"
-    	app:url="http://en.wikipedia.org/w/api.php?action=opensearch&amp;limit=8&amp;namespace=0&amp;format=json"
-    	app:input_key="search"/>
-```
-
-Response from Autocomplete URL should be parsed into data model which implements ```DisplayStringInterface```
-```java
-	public class WikiModel implements DisplayStringInterface{
-		public String item;
-
-		public WikiModel(String item){
-			this.item = item;
-		}
-		
-		@Override
-		public String getDisplayString() {
-			return item;
-		}
-	}
-```
+Response from Autocomplete URL should be parsed into data model which defined in ```modelClass``` attribute. We have used android's JSONObject. You can use any third party library for eg: Jackson or Gson to parse.
 
 ```java
-		mAutoText=(com.mobisys.android.autocompletetextviewcomponent.ClearableAutoTextView)findViewById(R.id.auto_text);
-		//Sets the selection listener
-		mAutoText.setSelectionListener(this);
-		//Sets the parser
-		mAutoText.setParser(new AutoCompleteResponseParser() {
-			
+((com.mobisys.android.autocompletetextview.AutoCompleteView)findViewById(R.id.auto_text_2)).setParser(new AutoCompleteView.AutoCompleteResponseParser() {
 			@Override
-			public ArrayList<DisplayStringInterface> parseAutoCompleteResponse(
-					String response) {
-				ArrayList<DisplayStringInterface> models = new ArrayList<DisplayStringInterface>();
+			public ArrayList<? extends Object> parseAutoCompleteResponse(String response) {
+				ArrayList<Place> places=null;
 				try {
-					JSONArray jsonArray = new JSONArray(response);
-					JSONArray array = jsonArray.optJSONArray(1);
-					if(array!=null){
-						for(int i=0;i<array.length();i++){
-							models.add(new WikiModel(array.getString(i)));
-						}
+					JSONObject jsonObj = new JSONObject(response);
+					final JSONArray predsJsonArray = jsonObj.getJSONArray("predictions");
+
+					places=new ArrayList<Place>();
+					for(int i=0;i<predsJsonArray.length();i++){
+						String placeName = predsJsonArray.getJSONObject(i).getString("description");
+						String placeReference = predsJsonArray.getJSONObject(i).getString("reference");
+
+						Place place = new Place();
+						place.setName(placeName);
+						place.setPhotoReference(placeReference);
+						places.add(place);
 					}
 				} catch (JSONException e) {
-					e.printStackTrace();
+					Log.e("AppUtil", "Cannot process JSON results", e);
 				}
-				
-				return models;
+
+				return places;
 			}
 		});
 ```
 
-When user selects the item, you'll receive the selected item in ```SelectionListener```. If you are using for Google Places URL, it will also get Lat Lng information of selected place.
+When user selects the item, you'll receive the selected item in ```SelectionListener```.
 
 SelectionListener
 ```Java
-public interface SelectionListener {
-	/*
-	 * Called when user selects an item from autocomplete view
-	 */
-	public void onItemSelection(DisplayStringInterface selectedItem);
-	
-	/*
-	 * Called only in case of Google Places API (autocomplete_url = null)
-	 */
-	public void onReceiveLocationInformation(double lat, double lng);
-}
+((com.mobisys.android.autocompletetextview.AutoCompleteView)findViewById(R.id.auto_text_2)).setSelectionListener(new AutoCompleteView.AutoCompleteItemSelectionListener() {
+			@Override
+			public void onItemSelection(Object obj) {
+				Place place = (Place)obj;
+				((com.mobisys.android.autocompletetextview.AutoCompleteView)findViewById(R.id.auto_text_2)).setText(place.getName());
+				((com.mobisys.android.autocompletetextview.AutoCompleteView)findViewById(R.id.auto_text_2)).clearFocus();
+			}
+		});
 ```
+
+Note: It uses Universal Image Loader library to show images in if ImageView binds to Model.
