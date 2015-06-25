@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<declare-styleable name="AutoCompleteView">
+		<attr name="autocompleteUrl" format="string"/>
+		<attr name="modelClass" format="string"/>
+		<attr name="row_layout" format="reference"/>
+	</declare-styleable>
+</resources>
