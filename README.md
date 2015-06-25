@@ -33,7 +33,7 @@ Sample XML have following attributes:<br/>
 
 Bind getter methods of model with row view through ```@ViewId``` annotation.
 
-XML
+XML - row_place.xml
 ```
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -54,7 +54,7 @@ XML
 </RelativeLayout>
 ```
 Corresponding Model
-
+```getName()``` method binds to ```R.id.image``` of row_place.xml
 ```
 public class Place {
     private static final String PLACE_IMAGE_URL = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=%s&sensor=false&key=AIzaSyDhFGUWlyd0KsjPQ59ATr-yL0bQKujHmeg";
