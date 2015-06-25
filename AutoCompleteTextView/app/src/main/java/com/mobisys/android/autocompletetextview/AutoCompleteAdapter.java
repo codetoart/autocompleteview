@@ -133,7 +133,7 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable{
                     setOnClickMethod(methodMapping.get(i).onClickMethod, v, resultList.get(position));
                 } else if (v instanceof ImageView){
                     String url = method.invoke(resultList.get(position), null).toString();
-                    MImageLoader.displayImage(mContext, url,(ImageView)v, R.drawable.abc_tab_indicator_mtrl_alpha);
+                    MImageLoader.displayImage(mContext, url,(ImageView)v, R.drawable.picture_stub);
                     setOnClickMethod(methodMapping.get(i).onClickMethod, v, resultList.get(position));
                 } else if (v instanceof Button){
                     String text = method.invoke(resultList.get(position), null).toString();
