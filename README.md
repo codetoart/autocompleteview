@@ -54,7 +54,8 @@ XML - row_place.xml
 </RelativeLayout>
 ```
 Corresponding Model
-```getName()``` method binds to ```R.id.image``` of row_place.xml
+```getName()``` method binds to ```R.id.name``` of row_place.xml
+```getImageUrl()``` method binds to ```R.id.image``` of row_place.xml
 ```
 public class Place {
     private static final String PLACE_IMAGE_URL = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=%s&sensor=false&key=AIzaSyDhFGUWlyd0KsjPQ59ATr-yL0bQKujHmeg";
