@@ -27,7 +27,7 @@ Sample:
 ```	  
 
 Sample XML have following attributes:<br/>
-1) Autocomplete URL ```autocompleteUrl```:<br/> Not mandatory. If not specified, you should set ``` RequestInterceptor``` <br/>
+1) Autocomplete URL ```autocompleteUrl```:<br/> Not mandatory. If not specified, you should set ``` RequestDispatcher``` <br/>
 2) Model Class ```modelClass```:<br/> Model class (with package name) where response from server will be parsed. It is <b>MANDATORY</b><br/>
 3) Row Layout ```rowLayout```:<br/> Row layout of auto-complete view. Not mandatory. Default used is ``` android.R.layout.simple_dropdown_item_1line```
 
