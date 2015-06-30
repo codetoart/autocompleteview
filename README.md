@@ -1,4 +1,20 @@
-autocompletetextview
+
+Installation
+====================
+Add repository to project's ```build.gradle```
+```
+repositories {
+    jcenter()
+    maven {
+        url 'http://dl.bintray.com/takenet/maven'
+    }
+}
+```
+Add compile dependency to app ```build.gradle```
+```
+compile 'com.mobisys.android.autocompleteview:library:1.1'
+```
+AutocompleteView Usage
 ====================
 
 Easiest way to add autocomplete view in your app.
@@ -8,7 +24,7 @@ Sample Google Place screenshot
 
 Sample:
 ```xml
-<com.mobisys.android.autocompletetextview.AutoCompleteView
+<com.mobisys.android.autocompleteview.AutoCompleteView
         android:id="@+id/auto_text_2"
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -23,7 +39,7 @@ Sample:
         android:background="@android:color/white"
     	app:autocompleteUrl="https://maps.googleapis.com/maps/api/place/autocomplete/json?sensor=false&amp;key=AIzaSyDhFGUWlyd0KsjPQ59ATr-yL0bQKujHmeg&amp;input="
         app:row_layout="@layout/row_place"
-        app:modelClass="com.mobisys.android.autocompletetextview.model.Place"/>
+        app:modelClass="com.mobisys.android.autocompleteview.model.Place"/>
 ```	  
 
 Sample XML have following attributes:<br/>
@@ -91,7 +107,7 @@ public class Place {
 Response from Autocomplete URL should be parsed into data model which defined in ```modelClass``` attribute. We have used android's JSONObject. You can use any third party library for eg: Jackson or Gson to parse.
 
 ```java
-((com.mobisys.android.autocompletetextview.AutoCompleteView)findViewById(R.id.auto_text_2)).setParser(new AutoCompleteView.AutoCompleteResponseParser() {
+((com.mobisys.android.autocompleteaview.AutoCompleteView)findViewById(R.id.auto_text_2)).setParser(new AutoCompleteView.AutoCompleteResponseParser() {
 			@Override
 			public ArrayList<? extends Object> parseAutoCompleteResponse(String response) {
 				ArrayList<Place> places=null;
@@ -122,12 +138,12 @@ When user selects the item, you'll receive the selected item in ```SelectionList
 
 SelectionListener
 ```Java
-((com.mobisys.android.autocompletetextview.AutoCompleteView)findViewById(R.id.auto_text_2)).setSelectionListener(new AutoCompleteView.AutoCompleteItemSelectionListener() {
+((com.mobisys.android.autocompleteview.AutoCompleteView)findViewById(R.id.auto_text_2)).setSelectionListener(new AutoCompleteView.AutoCompleteItemSelectionListener() {
 			@Override
 			public void onItemSelection(Object obj) {
 				Place place = (Place)obj;
-				((com.mobisys.android.autocompletetextview.AutoCompleteView)findViewById(R.id.auto_text_2)).setText(place.getName());
-				((com.mobisys.android.autocompletetextview.AutoCompleteView)findViewById(R.id.auto_text_2)).clearFocus();
+				((com.mobisys.android.autocompleteview.AutoCompleteView)findViewById(R.id.auto_text_2)).setText(place.getName());
+				((com.mobisys.android.autocompleteview.AutoCompleteView)findViewById(R.id.auto_text_2)).clearFocus();
 			}
 		});
 ```
