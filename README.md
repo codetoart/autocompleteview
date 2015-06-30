@@ -20,7 +20,7 @@ AutocompleteView Usage
 Easiest way to add autocomplete view in your app.
 
 Sample Google Place screenshot
-![alt tag](https://raw.githubusercontent.com/mobisystech/autocompletetextview/master/AutoCompleteTextView/Screenshot_2015-06-25-18-31-33.png)
+![alt tag](https://raw.githubusercontent.com/mobisystech/autocompleteview/master/AutoCompleteView/Screenshot_2015-06-25-18-31-33.png)
 
 Sample:
 ```xml
