@@ -6,7 +6,7 @@ Add repository to project's ```build.gradle```
 repositories {
     jcenter()
     maven {
-        url 'http://dl.bintray.com/takenet/maven'
+        url 'http://dl.bintray.com/mobisystech/maven'
     }
 }
 ```
