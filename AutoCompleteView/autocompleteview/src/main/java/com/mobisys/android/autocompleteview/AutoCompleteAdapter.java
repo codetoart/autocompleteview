@@ -11,6 +11,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.net.Uri;
 
 import com.mobisys.android.autocompleteview.annotations.ViewId;
 import com.mobisys.android.autocompleteview.exceptions.ModelTypeMismatchException;
@@ -227,6 +228,6 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable{
     }
 
     private String appendInput(String query){
-        return mAutocompleteUrl+query;
+        return mAutocompleteUrl+Uri.encode(query);
     }
 }
