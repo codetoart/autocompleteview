@@ -100,6 +100,14 @@ public class AutoCompleteView extends AutoCompleteTextView {
         }
     }
 
+   public void setAutocompleteUrl(String mAutocompleteUrl){
+        this.mAutocompleteUrl = mAutocompleteUrl;
+    }
+    
+    public void setModelClassName(String mModelClassName){
+        this.mModelClassName = mModelClassName;
+    }
+    
     public void setLoadingIndicator(View loadingIndicator){
         this.mLoadingIndicator = loadingIndicator;
     }
