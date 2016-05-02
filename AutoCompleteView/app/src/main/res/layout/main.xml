@@ -2,9 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="56dp"
+    android:layout_height="match_parent"
     android:background="@android:color/darker_gray">
-    <!--<com.mobisys.android.autocompletetextview.AutoCompleteView
+	<com.mobisys.android.autocompleteview.AutoCompleteView
         android:id="@+id/auto_text"
         android:layout_width="fill_parent"
         android:layout_height="40dp"
@@ -17,9 +17,9 @@
        	android:textColor="@android:color/black"
         android:textSize="18sp"
         android:background="@android:color/white"
-    	app:autocompleteUrl="http://en.wikipedia.org/w/api.php?action=opensearch&amp;limit=8&amp;namespace=0&amp;format=json&amp;search="
-    	app:modelClass="com.mobisys.android.autocompletetextview.model.WikiItem"
-        app:row_layout="@layout/row_wiki"/>-->
+    	app:autocompleteUrl="https://en.wikipedia.org/w/api.php?action=opensearch&amp;format=json&amp;search="
+    	app:modelClass="com.mobisys.android.sample.autocompleteview.model.WikiItem"
+        app:rowLayout="@layout/row_wiki"/>
 
     <com.mobisys.android.autocompleteview.AutoCompleteView
         android:id="@+id/auto_text_2"
@@ -28,6 +28,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginRight="8dp"
+		android:layout_below="@+id/auto_text"
         android:paddingLeft="10dp" android:paddingRight="32dp"
         android:hint="Google places text"
        	android:singleLine="true"

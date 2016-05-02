@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import com.mobisys.android.autocompleteview.AutoCompleteView;
 import com.mobisys.android.sample.autocompleteview.model.Place;
 import com.mobisys.android.sample.autocompleteview.R;
+import com.mobisys.android.sample.autocompleteview.model.WikiItem;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -24,13 +25,14 @@ public class MainActivity extends Activity{
 		setContentView(R.layout.main);
 		
 		//Customized auto complete URL. For demo we have used Wiki suggestions
-		/*mWikiAutoComplete=(com.mobisys.android.autocompletetextview.AutoCompleteView)findViewById(R.id.auto_text);
-		mWikiAutoComplete.setLoadingIndicator(findViewById(R.id.loading_indicator));
+		mWikiAutoComplete=(com.mobisys.android.autocompleteview.AutoCompleteView)findViewById(R.id.auto_text);
+		//mWikiAutoComplete.setLoadingIndicator(findViewById(R.id.loading_indicator));
 		mWikiAutoComplete.setParser(new AutoCompleteView.AutoCompleteResponseParser() {
 			
 			@Override
 			public ArrayList<? extends Object> parseAutoCompleteResponse(
 					String response) {
+				Log.d("MainActivity", "Response: "+response);
 				ArrayList<WikiItem> models = new ArrayList<WikiItem>();
 				try {
 					JSONArray jsonArray = new JSONArray(response);
@@ -46,7 +48,15 @@ public class MainActivity extends Activity{
 				
 				return models;
 			}
-		});*/
+		});
+		((com.mobisys.android.autocompleteview.AutoCompleteView)findViewById(R.id.auto_text)).setSelectionListener(new AutoCompleteView.AutoCompleteItemSelectionListener() {
+			@Override
+			public void onItemSelection(Object obj) {
+				WikiItem wikiItem = (WikiItem)obj;
+				((com.mobisys.android.autocompleteview.AutoCompleteView)findViewById(R.id.auto_text)).setText(wikiItem.getItem());
+				((com.mobisys.android.autocompleteview.AutoCompleteView)findViewById(R.id.auto_text)).clearFocus();
+			}
+		});
 
 		((com.mobisys.android.autocompleteview.AutoCompleteView)findViewById(R.id.auto_text_2)).setParser(new AutoCompleteView.AutoCompleteResponseParser() {
 			@Override

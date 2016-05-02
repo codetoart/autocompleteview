@@ -22,7 +22,7 @@ public class HttpConnector {
 
 	        // Load the results into a StringBuilder
 	        int read;
-	        char[] buff = new char[1024];
+	        char[] buff = new char[512];
 	        while ((read = in.read(buff)) != -1) {
 	            jsonResults.append(buff, 0, read);
 	        }
