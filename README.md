@@ -12,7 +12,7 @@ repositories {
 ```
 Add compile dependency to app ```build.gradle```
 ```
-compile 'com.mobisys.android:autocompleteview:1.1'
+compile 'com.mobisys.android:autocompleteview:1.2'
 ```
 AutocompleteView Usage
 ====================
